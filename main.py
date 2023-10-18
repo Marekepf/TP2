@@ -1,5 +1,8 @@
 from flask import Flask, request, render_template, jsonify
 import requests  
+import os
+from google.analytics.data_v1beta import BetaAnalyticsDataClient
+from google.analytics.data_v1beta.types import DateRange, Dimension, Metric, RunReportRequest
 
 app = Flask(__name__)
 
@@ -50,6 +53,35 @@ def perform_google_request():
     req = requests.get("https://analytics.google.com/analytics/web/#/p407458242/reports/intelligenthome?params=_u..nav%3Dmaui")
 
     return req.text
+
+@app.route('/Oauth', methods=['GET'])
+def fetch_google_analytics_data():
+
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'datasourcetp2-xxxxxxxxxx.json'
+    PROPERTY_ID = 'xxxxxxxx'
+    starting_date = "8daysAgo"
+    ending_date = "yesterday"
+
+    client = BetaAnalyticsDataClient()
+    
+    def get_visitor_count(client, property_id):
+        request = RunReportRequest(
+            property=f"properties/{property_id}",
+            date_ranges=[{"start_date": starting_date, "end_date": ending_date}],
+            metrics=[{"name": "activeUsers"}]
+        )
+
+        response = client.run_report(request)
+        return response
+    response = get_visitor_count(client, PROPERTY_ID)
+
+    if response and response.row_count > 0:
+        metric_value = response.rows[0].metric_values[0].value
+    else:
+        metric_value = "N/A"  
+
+    return f'Number of visitors : {metric_value}'
+
 
 if __name__ == "__main__":
     app.run()
