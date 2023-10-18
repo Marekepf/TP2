@@ -54,11 +54,12 @@ def perform_google_request():
 
     return req.text
 
+
 @app.route('/Oauth', methods=['GET'])
 def fetch_google_analytics_data():
 
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'datasourcetp2-xxxxxxxxxx.json'
-    PROPERTY_ID = 'xxxxxxxx'
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'datasourcetp2-xxxxxxxxx.json'
+    PROPERTY_ID = 'xxxxxxx'
     starting_date = "8daysAgo"
     ending_date = "yesterday"
 
@@ -81,7 +82,6 @@ def fetch_google_analytics_data():
         metric_value = "N/A"  
 
     return f'Number of visitors : {metric_value}'
-
 
 if __name__ == "__main__":
     app.run()
